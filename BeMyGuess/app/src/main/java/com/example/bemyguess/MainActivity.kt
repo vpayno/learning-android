@@ -3,6 +3,7 @@ package com.example.bemyguess
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import kotlin.random.Random
@@ -10,7 +11,7 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
     var answer : Int = 0
     var isGameOver : Boolean = false
-    var guesses : Int = 0
+    var numOfAttempts : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +26,21 @@ class MainActivity : AppCompatActivity() {
 
     fun startOver() {
         isGameOver = false
-        guesses = 0
+        numOfAttempts = 0
 
         generateAnswer()
 
         val promptTextView : TextView = findViewById<TextView>(R.id.textView)
-        promptTextView.text = "Guess a number from 1 to 25"
+        promptTextView.text = "Guess from 1 to 25"
 
-        val answerTextView = findViewById<TextView>(R.id.answer)
-        answerTextView.text = "No. of Guesses: " + guesses.toString()
+        val answerTextView : TextView = findViewById<TextView>(R.id.answer)
+        answerTextView.text = "??"
+
+        val editTextGuess : EditText = findViewById<EditText>(R.id.editTextGuess)
+        editTextGuess.text.clear()
+
+        val submitButton : Button = findViewById<Button>(R.id.buttonSubmit)
+        submitButton.isEnabled = true
     }
 
     fun btnStartOverTapped(view: View) {
@@ -44,23 +51,42 @@ class MainActivity : AppCompatActivity() {
         val guess = getUsersGuess() ?: -999
         val promptTextView : TextView = findViewById<TextView>(R.id.textView)
 
+        // not a valid guess
         if (guess !in 1..25) {
             "Guess must be 1 to 25".also { promptTextView.text = it }
 
-            guesses++
+            numOfAttempts++
 
             val answerTextView = findViewById<TextView>(R.id.answer)
-            answerTextView.text = "No. of Guesses: " + guesses.toString()
+            answerTextView.text = "No. of Guesses: " + numOfAttempts.toString()
 
             return
         }
 
-        isGameOver = true
+        // we have a valid guess
 
-        promptTextView.text = "You guessed the number!"
+        numOfAttempts++
 
-        val answerTextView : TextView = findViewById<TextView>(R.id.answer)
-        answerTextView.text = answer.toString()
+        var message : String = ""
+        var plural : String = if (numOfAttempts > 1) "es" else ""
+
+
+        if (guess == answer) {
+            isGameOver = true
+
+            message = "Correct! Guess" + plural + ": $numOfAttempts"
+            promptTextView.text = message
+
+            val answerTextView : TextView = findViewById<TextView>(R.id.answer)
+            answerTextView.text = answer.toString()
+
+            val submitButton : Button = findViewById<Button>(R.id.buttonSubmit)
+            submitButton.isEnabled = false
+        }
+        else {
+            message = if (guess < answer) "Guess too low!" else "Guess too high!"
+            promptTextView.text = message
+        }
     }
 
     fun getUsersGuess() : Int? {
