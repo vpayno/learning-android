@@ -1,4 +1,8 @@
 ---
+# https://github.com/actions/setup-java
+# https://github.com/actions/cache
+# https://github.com/gradle/gradle-build-action
+#
 name: Android CI
 
 "on":
