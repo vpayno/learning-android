@@ -36,10 +36,12 @@ jobs:
         run: |-
           declare -i retval=0
           cd ./coursera
-          for d in *; do
+          for d in */*; do
             [[ -d ${d} ]] || continue
             (
               cd "${d}"
+              pwd
+              ls
               chmod -v +x ./gradlew
             ) || (( retval++ ))
           done
@@ -48,10 +50,12 @@ jobs:
         run: |-
           declare -i retval=0
           cd ./coursera
-          for d in *; do
+          for d in */*; do
             [[ -d ${d} ]] || continue
             (
               cd "${d}"
+              pwd
+              ls
               time ./gradlew build
             ) || (( retval++ ))
           done
