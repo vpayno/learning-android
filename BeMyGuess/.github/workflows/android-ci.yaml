@@ -1,0 +1,58 @@
+---
+name: Android CI
+
+"on":
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: ["main"]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache
+        uses: actions/cache@v1.2.1
+        with:
+          # A directory to store and save the cache
+          path: /tmp/cache/android-ci
+          # An explicit key for restoring and saving the cache
+          key: "{{ cache_name }}androidci"
+          # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+          # restore-keys:  # optional
+      - name: set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: |-
+          declare -i retval=0
+          cd ./coursera
+          for d in *; do
+            [[ -d ${d} ]] || continue
+            (
+              cd "${d}"
+              chmod -v +x ./gradlew
+            ) || (( retval++ ))
+          done
+          exit "${retval}"
+      - name: Build with Gradle
+        run: |-
+          declare -i retval=0
+          cd ./coursera
+          for d in *; do
+            [[ -d ${d} ]] || continue
+            (
+              cd "${d}"
+              time ./gradlew build
+            ) || (( retval++ ))
+          done
+          exit "${retval}"
