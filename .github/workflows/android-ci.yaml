@@ -30,10 +30,10 @@ jobs:
           key: "{{ cache_name }}androidci"
           # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
           # restore-keys:  # optional
-      - name: set up JDK 11
+      - name: set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
           cache: gradle
       - uses: gradle/gradle-build-action@v2
